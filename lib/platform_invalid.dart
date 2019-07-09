@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:build/build.dart';
-import 'package:build_config/build_config.dart';
-import 'package:build_runner_core/build_runner_core.dart';
 
 class InvalidBuilder implements Builder {
   BuilderOptions builderOptions;
@@ -11,12 +9,22 @@ class InvalidBuilder implements Builder {
 
   Future build(BuildStep buildStep) async {
     var inputLibrary = await buildStep.inputLibrary;
-    var resolver = buildStep.resolver;
-    print("Hello!");
+    for (Element element in inputLibrary.topLevelElements) {
+      if (element is VariableElement) {
+        var typeElement = element.type.element;
+        var resolvedLibrary = await typeElement.session
+            .getResolvedLibraryByElement(typeElement.library);
+
+        // Next line throws a `StateError`:
+        // "Bad state: The result is not valid: ResultState.NOT_A_FILE"
+        resolvedLibrary.getElementDeclaration(typeElement);
+      }
+    }
   }
 
-  Map<String, List<String>> get buildExtensions =>
-      const { '.dart': ['.g.dart'] };
+  Map<String, List<String>> get buildExtensions => const {
+        '.dart': ['.g.dart']
+      };
 }
 
 InvalidBuilder invalidBuilder(BuilderOptions options) {
