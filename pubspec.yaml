@@ -1,0 +1,14 @@
+name: platform_invalid
+description: Example repo showing platform libraries considered non-valid
+
+environment:
+  sdk: '>=2.0.0 <3.0.0'
+
+dependencies:
+  analyzer: '>=0.35.0 <0.37.0'
+  build_runner: any
+  build_runner_core: any
+  build_test: any
+
+dev_dependencies:
+  test: ^1.0.0
